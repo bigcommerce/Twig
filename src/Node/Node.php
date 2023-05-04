@@ -12,6 +12,7 @@
 
 namespace Twig\Node;
 
+use Traversable;
 use Twig\Compiler;
 use Twig\Source;
 
@@ -210,15 +211,15 @@ class Node implements \Twig_NodeInterface
     /**
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return \count($this->nodes);
     }
 
     /**
-     * @return \Traversable
+     * @return Traversable
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->nodes);
     }
