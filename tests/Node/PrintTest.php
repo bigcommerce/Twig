@@ -25,7 +25,7 @@ class PrintTest extends NodeTestCase
         $this->assertEquals($expr, $node->getNode('expr'));
     }
 
-    public function getTests()
+    public static function getTests()
     {
         $tests = [];
         $tests[] = [new PrintNode(new ConstantExpression('foo', 1), 1), "// line 1\necho \"foo\";"];

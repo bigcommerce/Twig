@@ -37,7 +37,7 @@ class IfTest extends NodeTestCase
         $this->assertEquals($else, $node->getNode('else'));
     }
 
-    public function getTests()
+    public static function getTests()
     {
         $tests = [];
 
@@ -48,10 +48,12 @@ class IfTest extends NodeTestCase
         $else = null;
         $node = new IfNode($t, $else, 1);
 
+        $foo = self::getVariableGetter('foo');
+        $bar = self::getVariableGetter('bar');
         $tests[] = [$node, <<<EOF
 // line 1
 if (true) {
-    echo {$this->getVariableGetter('foo')};
+    echo {$foo};
 }
 EOF
         ];
@@ -68,9 +70,9 @@ EOF
         $tests[] = [$node, <<<EOF
 // line 1
 if (true) {
-    echo {$this->getVariableGetter('foo')};
+    echo {$foo};
 } elseif (false) {
-    echo {$this->getVariableGetter('bar')};
+    echo {$bar};
 }
 EOF
         ];
@@ -85,9 +87,9 @@ EOF
         $tests[] = [$node, <<<EOF
 // line 1
 if (true) {
-    echo {$this->getVariableGetter('foo')};
+    echo {$foo};
 } else {
-    echo {$this->getVariableGetter('bar')};
+    echo {$bar};
 }
 EOF
         ];

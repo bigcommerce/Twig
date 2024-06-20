@@ -12,6 +12,8 @@ namespace Twig\Tests\Node\Expression;
  */
 
 use Twig\Environment;
+use Twig\Loader\LoaderInterface;
+use Twig\Loader\SourceContextLoaderInterface;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\FilterExpression;
 use Twig\Node\Node;
@@ -32,17 +34,35 @@ class FilterTest extends NodeTestCase
         $this->assertEquals($args, $node->getNode('arguments'));
     }
 
-    public function getTests()
+    public static function getTests()
     {
-        $environment = new Environment($this->createMock('\Twig\Loader\LoaderInterface'));
+        $loader = new class implements LoaderInterface, SourceContextLoaderInterface {
+            public function getSource($name)
+            {
+            }
+
+            public function getCacheKey($name)
+            {
+            }
+
+            public function isFresh($name, $time)
+            {
+            }
+
+            public function getSourceContext($name)
+            {
+            }
+        };
+
+        $environment = new Environment($loader);
         $environment->addFilter(new TwigFilter('bar', 'bar', ['needs_environment' => true]));
         $environment->addFilter(new TwigFilter('barbar', 'Twig\Tests\Node\Expression\twig_tests_filter_barbar', ['needs_context' => true, 'is_variadic' => true]));
 
         $tests = [];
 
         $expr = new ConstantExpression('foo', 1);
-        $node = $this->createFilter($expr, 'upper');
-        $node = $this->createFilter($node, 'number_format', [new ConstantExpression(2, 1), new ConstantExpression('.', 1), new ConstantExpression(',', 1)]);
+        $node = self::createFilter($expr, 'upper');
+        $node = self::createFilter($node, 'number_format', [new ConstantExpression(2, 1), new ConstantExpression('.', 1), new ConstantExpression(',', 1)]);
 
         if (\function_exists('mb_get_info')) {
             $tests[] = [$node, 'twig_number_format_filter($this->env, twig_upper_filter($this->env, "foo"), 2, ".", ",")'];
@@ -52,7 +72,7 @@ class FilterTest extends NodeTestCase
 
         // named arguments
         $date = new ConstantExpression(0, 1);
-        $node = $this->createFilter($date, 'date', [
+        $node = self::createFilter($date, 'date', [
             'timezone' => new ConstantExpression('America/Chicago', 1),
             'format' => new ConstantExpression('d/m/Y H:i:s P', 1),
         ]);
@@ -60,46 +80,46 @@ class FilterTest extends NodeTestCase
 
         // skip an optional argument
         $date = new ConstantExpression(0, 1);
-        $node = $this->createFilter($date, 'date', [
+        $node = self::createFilter($date, 'date', [
             'timezone' => new ConstantExpression('America/Chicago', 1),
         ]);
         $tests[] = [$node, 'twig_date_format_filter($this->env, 0, null, "America/Chicago")'];
 
         // underscores vs camelCase for named arguments
         $string = new ConstantExpression('abc', 1);
-        $node = $this->createFilter($string, 'reverse', [
+        $node = self::createFilter($string, 'reverse', [
             'preserve_keys' => new ConstantExpression(true, 1),
         ]);
         $tests[] = [$node, 'twig_reverse_filter($this->env, "abc", true)'];
-        $node = $this->createFilter($string, 'reverse', [
+        $node = self::createFilter($string, 'reverse', [
             'preserveKeys' => new ConstantExpression(true, 1),
         ]);
         $tests[] = [$node, 'twig_reverse_filter($this->env, "abc", true)'];
 
         // filter as an anonymous function
         if (\PHP_VERSION_ID >= 50300) {
-            $node = $this->createFilter(new ConstantExpression('foo', 1), 'anonymous');
+            $node = self::createFilter(new ConstantExpression('foo', 1), 'anonymous');
             $tests[] = [$node, 'call_user_func_array($this->env->getFilter(\'anonymous\')->getCallable(), ["foo"])'];
         }
 
         // needs environment
-        $node = $this->createFilter($string, 'bar');
+        $node = self::createFilter($string, 'bar');
         $tests[] = [$node, 'bar($this->env, "abc")', $environment];
 
-        $node = $this->createFilter($string, 'bar', [new ConstantExpression('bar', 1)]);
+        $node = self::createFilter($string, 'bar', [new ConstantExpression('bar', 1)]);
         $tests[] = [$node, 'bar($this->env, "abc", "bar")', $environment];
 
         // arbitrary named arguments
-        $node = $this->createFilter($string, 'barbar');
+        $node = self::createFilter($string, 'barbar');
         $tests[] = [$node, 'Twig\Tests\Node\Expression\twig_tests_filter_barbar($context, "abc")', $environment];
 
-        $node = $this->createFilter($string, 'barbar', ['foo' => new ConstantExpression('bar', 1)]);
+        $node = self::createFilter($string, 'barbar', ['foo' => new ConstantExpression('bar', 1)]);
         $tests[] = [$node, 'Twig\Tests\Node\Expression\twig_tests_filter_barbar($context, "abc", null, null, ["foo" => "bar"])', $environment];
 
-        $node = $this->createFilter($string, 'barbar', ['arg2' => new ConstantExpression('bar', 1)]);
+        $node = self::createFilter($string, 'barbar', ['arg2' => new ConstantExpression('bar', 1)]);
         $tests[] = [$node, 'Twig\Tests\Node\Expression\twig_tests_filter_barbar($context, "abc", null, "bar")', $environment];
 
-        $node = $this->createFilter($string, 'barbar', [
+        $node = self::createFilter($string, 'barbar', [
             new ConstantExpression('1', 1),
             new ConstantExpression('2', 1),
             new ConstantExpression('3', 1),
@@ -138,7 +158,7 @@ class FilterTest extends NodeTestCase
         $compiler->compile($node);
     }
 
-    protected function createFilter($node, $name, array $arguments = [])
+    protected static function createFilter($node, $name, array $arguments = [])
     {
         $name = new ConstantExpression($name, 1);
         $arguments = new Node($arguments);
@@ -146,7 +166,7 @@ class FilterTest extends NodeTestCase
         return new FilterExpression($node, $name, $arguments, 1);
     }
 
-    protected function getEnvironment()
+    protected static function getEnvironment()
     {
         if (\PHP_VERSION_ID >= 50300) {
             return include 'PHP53/FilterInclude.php';

@@ -12,6 +12,8 @@ namespace Twig\Tests\Node\Expression;
  */
 
 use Twig\Environment;
+use Twig\Loader\LoaderInterface;
+use Twig\Loader\SourceContextLoaderInterface;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\Test\NullTest;
 use Twig\Node\Expression\TestExpression;
@@ -33,9 +35,27 @@ class TestTest extends NodeTestCase
         $this->assertEquals($name, $node->getAttribute('name'));
     }
 
-    public function getTests()
+    public static function getTests()
     {
-        $environment = new Environment($this->createMock('\Twig\Loader\LoaderInterface'));
+        $loader = new class implements LoaderInterface, SourceContextLoaderInterface {
+            public function getSource($name)
+            {
+            }
+
+            public function getCacheKey($name)
+            {
+            }
+
+            public function isFresh($name, $time)
+            {
+            }
+
+            public function getSourceContext($name)
+            {
+            }
+        };
+
+        $environment = new Environment($loader);
         $environment->addTest(new TwigTest('barbar', 'Twig\Tests\Node\Expression\twig_tests_test_barbar', ['is_variadic' => true, 'need_context' => true]));
 
         $tests = [];
@@ -46,22 +66,22 @@ class TestTest extends NodeTestCase
 
         // test as an anonymous function
         if (\PHP_VERSION_ID >= 50300) {
-            $node = $this->createTest(new ConstantExpression('foo', 1), 'anonymous', [new ConstantExpression('foo', 1)]);
+            $node = self::createTest(new ConstantExpression('foo', 1), 'anonymous', [new ConstantExpression('foo', 1)]);
             $tests[] = [$node, 'call_user_func_array($this->env->getTest(\'anonymous\')->getCallable(), ["foo", "foo"])'];
         }
 
         // arbitrary named arguments
         $string = new ConstantExpression('abc', 1);
-        $node = $this->createTest($string, 'barbar');
+        $node = self::createTest($string, 'barbar');
         $tests[] = [$node, 'Twig\Tests\Node\Expression\twig_tests_test_barbar("abc")', $environment];
 
-        $node = $this->createTest($string, 'barbar', ['foo' => new ConstantExpression('bar', 1)]);
+        $node = self::createTest($string, 'barbar', ['foo' => new ConstantExpression('bar', 1)]);
         $tests[] = [$node, 'Twig\Tests\Node\Expression\twig_tests_test_barbar("abc", null, null, ["foo" => "bar"])', $environment];
 
-        $node = $this->createTest($string, 'barbar', ['arg2' => new ConstantExpression('bar', 1)]);
+        $node = self::createTest($string, 'barbar', ['arg2' => new ConstantExpression('bar', 1)]);
         $tests[] = [$node, 'Twig\Tests\Node\Expression\twig_tests_test_barbar("abc", null, "bar")', $environment];
 
-        $node = $this->createTest($string, 'barbar', [
+        $node = self::createTest($string, 'barbar', [
             new ConstantExpression('1', 1),
             new ConstantExpression('2', 1),
             new ConstantExpression('3', 1),
@@ -72,12 +92,12 @@ class TestTest extends NodeTestCase
         return $tests;
     }
 
-    protected function createTest($node, $name, array $arguments = [])
+    protected static function createTest($node, $name, array $arguments = [])
     {
         return new TestExpression($node, $name, new Node($arguments), 1);
     }
 
-    protected function getEnvironment()
+    protected static function getEnvironment()
     {
         if (\PHP_VERSION_ID >= 50300) {
             return include 'PHP53/TestInclude.php';

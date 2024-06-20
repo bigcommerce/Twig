@@ -99,27 +99,27 @@ class TwigTestFoo implements \Iterator
         return strtolower($value);
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
 
-    public function current()
+    public function current(): mixed
     {
         return $this->array[$this->position];
     }
 
-    public function key()
+    public function key(): string
     {
         return 'a';
     }
 
-    public function next()
+    public function next(): void
     {
         ++$this->position;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->array[$this->position]);
     }

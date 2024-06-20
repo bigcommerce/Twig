@@ -26,7 +26,7 @@ class SpacelessTest extends NodeTestCase
         $this->assertEquals($body, $node->getNode('body'));
     }
 
-    public function getTests()
+    public static function getTests()
     {
         $body = new Node([new TextNode('<div>   <div>   foo   </div>   </div>', 1)]);
         $node = new SpacelessNode($body, 1);

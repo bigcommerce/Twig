@@ -33,7 +33,7 @@ class SetTest extends NodeTestCase
         $this->assertFalse($node->getAttribute('capture'));
     }
 
-    public function getTests()
+    public static function getTests()
     {
         $tests = [];
 
@@ -60,6 +60,7 @@ EOF
         $names = new Node([new AssignNameExpression('foo', 1)], [], 1);
         $values = new TextNode('foo', 1);
         $node = new SetNode(true, $names, $values, 1);
+        $bar = self::getVariableGetter('bar');
         $tests[] = [$node, <<<EOF
 // line 1
 \$context["foo"] = ('' === \$tmp = "foo") ? '' : new Markup(\$tmp, \$this->env->getCharset());
@@ -71,7 +72,7 @@ EOF
         $node = new SetNode(false, $names, $values, 1);
         $tests[] = [$node, <<<EOF
 // line 1
-list(\$context["foo"], \$context["bar"]) = ["foo", {$this->getVariableGetter('bar')}];
+list(\$context["foo"], \$context["bar"]) = ["foo", {$bar}];
 EOF
         ];
 

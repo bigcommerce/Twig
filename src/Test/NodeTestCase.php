@@ -19,7 +19,7 @@ use Twig\Node\Node;
 
 abstract class NodeTestCase extends TestCase
 {
-    abstract public function getTests();
+    abstract public static function getTests();
 
     /**
      * @dataProvider getTests
@@ -41,17 +41,17 @@ abstract class NodeTestCase extends TestCase
         }
     }
 
-    protected function getCompiler(Environment $environment = null)
+    protected static function getCompiler(Environment $environment = null)
     {
-        return new Compiler(null === $environment ? $this->getEnvironment() : $environment);
+        return new Compiler(null === $environment ? self::getEnvironment() : $environment);
     }
 
-    protected function getEnvironment()
+    protected static function getEnvironment()
     {
         return new Environment(new ArrayLoader([]));
     }
 
-    protected function getVariableGetter($name, $line = false)
+    protected static function getVariableGetter($name, $line = false)
     {
         $line = $line > 0 ? "// line {$line}\n" : '';
 
@@ -66,7 +66,7 @@ abstract class NodeTestCase extends TestCase
         return sprintf('%s$this->getContext($context, "%s")', $line, $name);
     }
 
-    protected function getAttributeGetter()
+    protected static function getAttributeGetter()
     {
         if (\function_exists('twig_template_get_attributes')) {
             return 'twig_template_get_attributes($this, ';

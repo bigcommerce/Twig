@@ -31,7 +31,7 @@ class MacroTest extends NodeTestCase
         $this->assertEquals('foo', $node->getAttribute('name'));
     }
 
-    public function getTests()
+    public static function getTests()
     {
         $body = new TextNode('foo', 1);
         $arguments = new Node([

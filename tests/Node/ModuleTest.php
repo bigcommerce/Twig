@@ -42,9 +42,22 @@ class ModuleTest extends NodeTestCase
         $this->assertEquals($source->getName(), $node->getTemplateName());
     }
 
-    public function getTests()
+    public static function getTests()
     {
-        $twig = new Environment($this->createMock('\Twig\Loader\LoaderInterface'));
+        $loader = new class implements \Twig_LoaderInterface {
+            public function getSource($name)
+            {
+            }
+
+            public function getCacheKey($name)
+            {
+            }
+
+            public function isFresh($name, $time)
+            {
+            }
+        };
+        $twig = new Environment($loader);
 
         $tests = [];
 
@@ -201,7 +214,7 @@ EOF
                         2
                     );
 
-        $twig = new Environment($this->createMock('\Twig\Loader\LoaderInterface'), ['debug' => true]);
+        $twig = new Environment($loader, ['debug' => true]);
         $node = new ModuleNode($body, $extends, $blocks, $macros, $traits, new Node([]), $source);
         $tests[] = [$node, <<<EOF
 <?php

@@ -55,7 +55,7 @@ class OptimizerTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function getTestsForForOptimizer()
+    public static function getTestsForForOptimizer()
     {
         return [
             ['{% for i in foo %}{% endfor %}', ['i' => false]],

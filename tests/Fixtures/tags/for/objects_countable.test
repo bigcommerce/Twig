@@ -20,12 +20,12 @@
 class ItemsIteratorCountable implements Iterator, \Countable
 {
   protected $values = ['foo' => 'bar', 'bar' => 'foo'];
-  public function current() { return current($this->values); }
-  public function key() { return key($this->values); }
-  public function next() { return next($this->values); }
-  public function rewind() { return reset($this->values); }
-  public function valid() { return false !== current($this->values); }
-  public function count() { return count($this->values); }
+  public function current(): mixed { return current($this->values); }
+  public function key(): mixed { return key($this->values); }
+  public function next(): mixed { return next($this->values); }
+  public function rewind(): bool { return reset($this->values); }
+  public function valid(): bool { return false !== current($this->values); }
+  public function count(): int { return count($this->values); }
 }
 return ['items' => new ItemsIteratorCountable()]
 --EXPECT--

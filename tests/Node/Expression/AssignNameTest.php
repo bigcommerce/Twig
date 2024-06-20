@@ -23,7 +23,7 @@ class AssignNameTest extends NodeTestCase
         $this->assertEquals('foo', $node->getAttribute('name'));
     }
 
-    public function getTests()
+    public static function getTests()
     {
         $node = new AssignNameExpression('foo', 1);
 

@@ -18,7 +18,7 @@ use Twig\Test\NodeTestCase;
 
 class NullCoalesceTest extends NodeTestCase
 {
-    public function getTests()
+    public static function getTests()
     {
         $tests = [];
 

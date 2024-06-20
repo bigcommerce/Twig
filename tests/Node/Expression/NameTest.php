@@ -12,6 +12,8 @@ namespace Twig\Tests\Node\Expression;
  */
 
 use Twig\Environment;
+use Twig\Loader\LoaderInterface;
+use Twig\Loader\SourceContextLoaderInterface;
 use Twig\Node\Expression\NameExpression;
 use Twig\Test\NodeTestCase;
 
@@ -24,13 +26,30 @@ class NameTest extends NodeTestCase
         $this->assertEquals('foo', $node->getAttribute('name'));
     }
 
-    public function getTests()
+    public static function getTests()
     {
+        $loader = new class implements LoaderInterface, SourceContextLoaderInterface {
+            public function getSource($name)
+            {
+            }
+
+            public function getCacheKey($name)
+            {
+            }
+
+            public function isFresh($name, $time)
+            {
+            }
+
+            public function getSourceContext($name)
+            {
+            }
+        };
         $node = new NameExpression('foo', 1);
         $context = new NameExpression('_context', 1);
 
-        $env = new Environment($this->createMock('\Twig\Loader\LoaderInterface'), ['strict_variables' => true]);
-        $env1 = new Environment($this->createMock('\Twig\Loader\LoaderInterface'), ['strict_variables' => false]);
+        $env = new Environment($loader, ['strict_variables' => true]);
+        $env1 = new Environment($loader, ['strict_variables' => false]);
 
         if (\PHP_VERSION_ID >= 70000) {
             $output = '($context["foo"] ?? $this->getContext($context, "foo"))';
@@ -42,7 +61,7 @@ class NameTest extends NodeTestCase
 
         return [
             [$node, "// line 1\n".$output, $env],
-            [$node, $this->getVariableGetter('foo', 1), $env1],
+            [$node, self::getVariableGetter('foo', 1), $env1],
             [$context, "// line 1\n\$context"],
         ];
     }
