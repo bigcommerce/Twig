@@ -11,6 +11,7 @@ namespace Twig\Tests\Util;
  * file that was distributed with this source code.
  */
 
+use Traversable;
 use Twig\Environment;
 use Twig\TwigFunction;
 use Twig\Util\DeprecationCollector;
@@ -38,7 +39,7 @@ class DeprecationCollectorTest extends \PHPUnit\Framework\TestCase
 
 class Twig_Tests_Util_Iterator implements \IteratorAggregate
 {
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator([
             'ok.twig' => '{{ foo }}',
