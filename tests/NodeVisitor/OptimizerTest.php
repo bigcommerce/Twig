@@ -14,6 +14,7 @@ namespace Twig\Tests\NodeVisitor;
 use Twig\Environment;
 use Twig\Node\ForNode;
 use Twig\Source;
+use Twig_NodeInterface;
 
 class OptimizerTest extends \PHPUnit\Framework\TestCase
 {
@@ -94,7 +95,7 @@ class OptimizerTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function checkForConfiguration(\Twig_NodeInterface $node = null, $target, $withLoop)
+    public function checkForConfiguration(?Twig_NodeInterface $node, $target, $withLoop)
     {
         if (null === $node) {
             return;

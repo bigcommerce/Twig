@@ -55,9 +55,9 @@ class Error extends \Exception
      * @param string             $message  The error message
      * @param int                $lineno   The template line where the error occurred
      * @param Source|string|null $source   The source context where the error occurred
-     * @param \Exception         $previous The previous exception
+     * @param ?\Exception        $previous The previous exception
      */
-    public function __construct($message, $lineno = -1, $source = null, \Exception $previous = null)
+    public function __construct($message, $lineno = -1, $source = null, ?\Exception $previous = null)
     {
         if (null === $source) {
             $name = null;
@@ -183,7 +183,7 @@ class Error extends \Exception
     /**
      * Sets the source context of the Twig template where the error occurred.
      */
-    public function setSourceContext(Source $source = null)
+    public function setSourceContext(?Source $source = null)
     {
         if (null === $source) {
             $this->sourceCode = $this->filename = $this->sourcePath = null;

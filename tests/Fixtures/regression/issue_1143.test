@@ -7,6 +7,7 @@ class House
 {
     const REGION_S = 1;
     const REGION_P = 2;
+    public $region;
 
     public static $regionChoices = [self::REGION_S => 'house.region.s', self::REGION_P => 'house.region.p'];
 
