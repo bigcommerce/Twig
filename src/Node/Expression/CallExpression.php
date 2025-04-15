@@ -302,7 +302,7 @@ abstract class CallExpression extends AbstractExpression
                 // __staticCall()
                 return [null, []];
             }
-            $r = new \ReflectionMethod($callable);
+            $r = \ReflectionMethod::createFromMethodName($callable);
             $callable = [$class, $method];
         } else {
             $r = new \ReflectionFunction($callable);
